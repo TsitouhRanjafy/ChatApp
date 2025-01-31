@@ -1,0 +1,21 @@
+{
+  "name": "socket-chat-example",
+  "version": "0.0.1",
+  "description": "my first chat app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./src/server.ts",
+    "build": "npx tsc && node ./dist/server.js"
+  },
+  "author": "Tsitohaina",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21"
+  }
+}
