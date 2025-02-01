@@ -1,29 +1,49 @@
 const socket = io();
 
-const form = document.getElementById('form')
-const input = document.getElementById('input')
+const form = document.getElementById('form');
+const input = document.getElementById('input');
 const message = document.getElementById('messages');
-const quitButton = document.getElementById('quit')
+const statusButton = document.getElementById('status');
 
 form.addEventListener(('submit'),async (e) => {
     e.preventDefault();
-    // if (input.value) {
-    //     socket.emit('chat message', input.value);
-    //     input.value = '';
-    // };
-
-    // try {
-    //     const response = await socket.timeout(5000).emitWithAck('request',{ foo: 'bar' }, 'baz')
-    //     console.log(response.status); // ok
-    // } catch (error) {
-    //     // the server did not acknowledge the event in the given delay
-    // }
-
-    socket.emit('tonga soa');
+    if (input.value) {
+        if (statusButton.textContent == 'Disconnect') {
+            console.log('chat to same room',input.value);
+            socket.emit('chat message',{ to: 'same room' },input.value);
+        } else {
+            console.log('chat except same room',input.value);
+            socket.emit('chat message',{ to: 'except same room' },input.value);
+        }
+        input.value = '';
+    }
 })
 
-quitButton.addEventListener(('click'),(e) => {
-    socket.emit('hiala');
+statusButton.addEventListener(('click'),async (e) => {
+    if (statusButton.textContent == 'Connect') {
+        console.log(statusButton.textContent);
+        try {
+            const response = await socket.emitWithAck('join')
+            if (response.status == 'ok') {
+                diffuseAMessage('*connected*')
+                statusButton.textContent = 'Disconnect'
+            }
+        } catch (error) {
+            throw error
+        }
+    } else {
+        console.log(statusButton.textContent);
+        try {
+            const response = await socket.emitWithAck('leave')
+            if (response.status == 'ok') {
+                diffuseAMessage('*disconnected*')
+                statusButton.textContent = 'Connect'
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+    
 })
 
 // Afficher le message dans ul>li
@@ -35,9 +55,9 @@ socket.on('chat message', (msg) => {
     window.scrollTo(0,document.body.scrollHeight);
 })
 
-socket.on('hello',(msg) => {
+const diffuseAMessage = (msg) => {
     const item = document.createElement('li')
     item.textContent = msg
     message.appendChild(item)
     window.scrollTo(0,document.body.scrollHeight);
-})
+}

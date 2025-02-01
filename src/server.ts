@@ -7,7 +7,9 @@ const app = express();
 const server = createServer(app);
 // Initialise une nouvelle instance de socket.io 
 // en passant le server (http) objet.
-const io = new Server(server)
+const io = new Server(server,{
+  connectionStateRecovery: {}
+})
 
 const cheminStatic = path.join(__dirname,'../public')
 
@@ -23,35 +25,33 @@ io.on('connection', (socket) => {
     socket.on('disconnect',() => {
       console.log('user disconnected'); // à chaque client déconnecter
     })
-    // //  imprimons le chat message événement
-    // socket.on('chat message',(msg) => {
-    //   io.emit('chat message', msg); // Enverrons le message à tout le monde, y compris à l'expéditeur
-    // })
+    
+    // Diffusion du message
+    socket.on('chat message',(destination,msg) => {
+      if (destination.to == 'same room') {
+        io.to('same room').emit('chat message', msg); 
+      } else if (destination.to == 'except same room'){
+        io.except('same room').emit('chat message',msg);
+      } else {
+        io.emit('chat message',destination);
+      }
+    })
 
-    socket.on('request',(arg1,arg2,callback) => {
-      console.log(arg1);
-      console.log(arg2);
+    // Connect to 'same room'
+    socket.on('join', (callback) => {
+      socket.join('same room');
       callback({
-        status: 'ok' // pour dir que l'autre côté reconnu l'événement
+        status: 'ok'
       })
     })
 
-    
-    socket.on('tonga soa',() => {
-      socket.join('some room');
-      // broadcast to all connected clients in the room
-      io.to('some room').emit('hello','world');
+    // Disconnect to 'same room'
+    socket.on('leave',(callback) => {
+      socket.leave('same room');
+      callback({
+        status: 'ok'
+      })
     })
-
-    socket.on('hiala', () => {
-      socket.leave('some room')
-    })
-
-    // broadcast to all connected clients except those in the room
-    // io.except('some room').emit('hello', 'world');
-
-
-
   })
 
 server.listen(3000, () => {
