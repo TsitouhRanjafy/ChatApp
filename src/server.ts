@@ -25,9 +25,10 @@ io.on('connection', (socket) => {
     })
     //  imprimons le chat message événement
     socket.on('chat message',(msg) => {
-      console.log('message:',msg);
+      io.emit('chat message', msg); // Enverrons le message à tout le monde, y compris à l'expéditeur
     })
-})
+
+  })
 
 server.listen(3000, () => {
   console.log(' server running at http://localhost:3000');
