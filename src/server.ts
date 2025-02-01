@@ -19,7 +19,14 @@ app.get('/', (req, res) => {
 
 // ecoute le connection événement pour les sockets entrants et connectez-le à la console 
 io.on('connection', (socket) => {
-    console.log('as user connected');
+    console.log('as user connected'); // à chaque client connecter
+    socket.on('disconnect',() => {
+      console.log('user disconnected'); // à chaque client déconnecter
+    })
+    //  imprimons le chat message événement
+    socket.on('chat message',(msg) => {
+      console.log('message:',msg);
+    })
 })
 
 server.listen(3000, () => {
