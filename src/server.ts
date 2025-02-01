@@ -21,36 +21,21 @@ app.get('/', (req, res) => {
 
 // ecoute le connection événement pour les sockets entrants et connectez-le à la console 
 io.on('connection', (socket) => {
-    console.log('as user connected'); // à chaque client connecter
+    console.log('an user connected'); // à chaque client connecter
     socket.on('disconnect',() => {
-      console.log('user disconnected'); // à chaque client déconnecter
+      console.log('an user disconnected'); // à chaque client déconnecter
     })
     
-    // Diffusion du message
-    socket.on('chat message',(destination,msg) => {
-      if (destination.to == 'same room') {
-        io.to('same room').emit('chat message', msg); 
-      } else if (destination.to == 'except same room'){
-        io.except('same room').emit('chat message',msg);
-      } else {
-        io.emit('chat message',destination);
-      }
+    socket.on('join',(roomId) => {
+      socket.join(roomId)
     })
 
-    // Connect to 'same room'
-    socket.on('join', (callback) => {
-      socket.join('same room');
-      callback({
-        status: 'ok'
-      })
+    socket.on('leave',(roomId) => {
+      socket.leave(roomId)
     })
-
-    // Disconnect to 'same room'
-    socket.on('leave',(callback) => {
-      socket.leave('same room');
-      callback({
-        status: 'ok'
-      })
+    
+    socket.on('chat message',(roomId,msg) => {
+      io.to(roomId).emit('chat message',msg);
     })
   })
 
