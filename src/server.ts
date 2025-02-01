@@ -23,11 +23,17 @@ io.on('connection', (socket) => {
     socket.on('disconnect',() => {
       console.log('user disconnected'); // à chaque client déconnecter
     })
-    //  imprimons le chat message événement
-    socket.on('chat message',(msg) => {
-      io.emit('chat message', msg); // Enverrons le message à tout le monde, y compris à l'expéditeur
+    // //  imprimons le chat message événement
+    // socket.on('chat message',(msg) => {
+    //   io.emit('chat message', msg); // Enverrons le message à tout le monde, y compris à l'expéditeur
+    // })
+    socket.on('request',(arg1,arg2,callback) => {
+      console.log(arg1);
+      console.log(arg2);
+      callback({
+        status: 'ok' // pour dir que l'autre côté reconnu l'événement
+      })
     })
-
   })
 
 server.listen(3000, () => {
