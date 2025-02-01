@@ -27,6 +27,7 @@ io.on('connection', (socket) => {
     // socket.on('chat message',(msg) => {
     //   io.emit('chat message', msg); // Enverrons le message à tout le monde, y compris à l'expéditeur
     // })
+
     socket.on('request',(arg1,arg2,callback) => {
       console.log(arg1);
       console.log(arg2);
@@ -34,6 +35,23 @@ io.on('connection', (socket) => {
         status: 'ok' // pour dir que l'autre côté reconnu l'événement
       })
     })
+
+    
+    socket.on('tonga soa',() => {
+      socket.join('some room');
+      // broadcast to all connected clients in the room
+      io.to('some room').emit('hello','world');
+    })
+
+    socket.on('hiala', () => {
+      socket.leave('some room')
+    })
+
+    // broadcast to all connected clients except those in the room
+    // io.except('some room').emit('hello', 'world');
+
+
+
   })
 
 server.listen(3000, () => {
